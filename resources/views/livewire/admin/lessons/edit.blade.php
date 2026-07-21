@@ -1,0 +1,247 @@
+<div class="max-w-5xl mx-auto py-6">
+
+    @if(session()->has('success'))
+        <div class="mb-4 rounded-lg border border-green-300 bg-green-100 px-4 py-3 text-green-800">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <x-admin.back-link
+        :href="route('admin.courses.builder', $form->lesson->section->course)"
+    >
+        Вернуться в конструктор курса
+    </x-admin.back-link>
+
+    <div class="mt-6">
+
+        <h1 class="text-3xl font-bold">
+            {{ $form->title }}
+        </h1>
+
+        <p class="mt-2 text-gray-500">
+            Редактирование урока
+        </p>
+
+    </div>
+
+    <form
+        wire:submit="save"
+        class="mt-8 space-y-8"
+    >
+
+        {{-- Основная информация --}}
+
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+
+            <div class="border-b px-6 py-4">
+
+                <h2 class="text-lg font-semibold">
+                    Основная информация
+                </h2>
+
+            </div>
+
+            <div class="space-y-6 p-6">
+
+                <div>
+
+                    <x-input-label
+                        for="title"
+                        value="Название урока"
+                    />
+
+                    <x-text-input
+                        id="title"
+                        wire:model.live="form.title"
+                        class="mt-1 block w-full"
+                    />
+
+                    <x-input-error
+                        :messages="$errors->get('form.title')"
+                        class="mt-2"
+                    />
+
+                </div>
+
+                <div>
+
+                    <x-input-label
+                        for="slug"
+                        value="Slug"
+                    />
+
+                    <x-text-input
+                        id="slug"
+                        wire:model.live="form.slug"
+                        class="mt-1 block w-full"
+                    />
+
+                    <x-input-error
+                        :messages="$errors->get('form.slug')"
+                        class="mt-2"
+                    />
+
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+
+                        <x-input-label
+                            for="video_url"
+                            value="Ссылка на видео"
+                        />
+
+                        <x-text-input
+                            id="video_url"
+                            wire:model.live="form.video_url"
+                            class="mt-1 block w-full"
+                        />
+
+                        <x-input-error
+                            :messages="$errors->get('form.video_url')"
+                            class="mt-2"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <x-input-label
+                            for="duration"
+                            value="Продолжительность (сек.)"
+                        />
+
+                        <x-text-input
+                            id="duration"
+                            type="number"
+                            min="0"
+                            wire:model.live="form.duration"
+                            class="mt-1 block w-full"
+                        />
+
+                        <x-input-error
+                            :messages="$errors->get('form.duration')"
+                            class="mt-2"
+                        />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- Настройки --}}
+
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+
+            <div class="border-b px-6 py-4">
+
+                <h2 class="text-lg font-semibold">
+                    Настройки
+                </h2>
+
+            </div>
+
+            <div class="space-y-5 p-6">
+
+                <label class="flex items-center gap-3">
+
+                    <input
+                        type="checkbox"
+                        wire:model.live="form.is_free"
+                        class="rounded border-gray-300"
+                    >
+
+                    <span>
+                        Бесплатный урок
+                    </span>
+
+                </label>
+
+                <label class="flex items-center gap-3">
+
+                    <input
+                        type="checkbox"
+                        wire:model.live="form.is_published"
+                        class="rounded border-gray-300"
+                    >
+
+                    <span>
+                        Опубликован
+                    </span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+        {{-- Контент --}}
+
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+
+            <div class="border-b px-6 py-4">
+
+                <h2 class="text-lg font-semibold">
+                    Контент урока
+                </h2>
+
+            </div>
+
+            <div class="p-6">
+
+                <x-input-label
+                    for="content"
+                    value="Содержимое урока"
+                />
+
+                <textarea
+                    id="content"
+                    rows="16"
+                    wire:model.live="form.content"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                ></textarea>
+
+                <x-input-error
+                    :messages="$errors->get('form.content')"
+                    class="mt-2"
+                />
+
+            </div>
+
+        </div>
+
+        {{-- Кнопки --}}
+
+        <div class="flex items-center gap-4">
+
+            <x-primary-button
+                type="submit"
+                wire:loading.attr="disabled"
+            >
+                Сохранить урок
+            </x-primary-button>
+
+            <a
+                href="{{ route('admin.courses.builder', $form->lesson->section->course) }}"
+                class="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+                Отмена
+            </a>
+
+        </div>
+
+        <div
+            wire:loading
+            wire:target="save"
+            class="text-sm text-gray-500"
+        >
+            Сохранение...
+        </div>
+
+    </form>
+
+</div>

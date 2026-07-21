@@ -1,0 +1,26 @@
+[90m= [39m[34;4mApp\Models\Course[39;24m {#8564
+    [34mid[39m: [35m1[39m,
+    [34mauthor_id[39m: [35m2[39m,
+    [34mcategory_id[39m: [35m8[39m,
+    [34mtitle[39m: [32m"[39m[32mCulpa earum deserunt.[39m[32m"[39m,
+    [34mslug[39m: [32m"[39m[32mculpa-earum-deserunt[39m[32m"[39m,
+    [34mshort_description[39m: [32m"[39m[32mModi est aut eligendi mollitia debitis voluptatem.[39m[32m"[39m,
+    [34mdescription[39m: <<<[32mEOS[39m
+      [32mFacere aut molestiae neque dolor rerum consequatur maxime. Aut temporibus nisi in est. Quia voluptas sit labore possimus. Nihil est ut delectus culpa vel dolor.[39m
+      
+      [32mQuaerat non excepturi sit dolorum tempora. Rerum ut exercitationem omnis assumenda.[39m
+      
+      [32mEst quae aut a quam blanditiis tempora consequuntur. Atque aliquid consequatur voluptas et officiis. Magni minus deserunt a nam quam nesciunt unde cupiditate.[39m
+      
+      [32mVeritatis repellendus molestias minima at vel. Dolores minus in sunt quasi ut eligendi dolor occaecati. Quibusdam rerum fugit et at quia totam praesentium dolores. Iste quibusdam debitis et pariatur facere consequuntur.[39m
+      
+      [32mFuga et aut quasi nihil. Et est hic eum tenetur est vero accusamus mollitia. Autem itaque at modi molestiae. Ipsum error non ut.[39m
+      [32mEOS[39m,
+    [34mthumbnail[39m: [36mnull[39m,
+    [34mprice[39m: [32m"[39m[32m23.49[39m[32m"[39m,
+    [34mlevel[39m: [32m"[39m[32madvanced[39m[32m"[39m,
+    [34mstatus[39m: [32m"[39m[32mdraft[39m[32m"[39m,
+    [34mpublished_at[39m: [32m"[39m[32m2026-07-15 23:37:46[39m[32m"[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-07-15 23:37:46[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-07-15 23:37:46[39m[32m"[39m,
+  }
