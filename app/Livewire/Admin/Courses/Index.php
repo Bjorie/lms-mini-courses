@@ -3,11 +3,11 @@
 namespace App\Livewire\Admin\Courses;
 
 use App\Models\Course;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Index extends Component
 {
-
     public function delete(Course $course): void
     {
         $course->delete();
@@ -17,15 +17,17 @@ class Index extends Component
             'Курс успешно удалён.'
         );
     }
-    public function render()
+
+    public function render(): View
     {
         return view('livewire.admin.courses.index', [
-            'courses' => Course::with([
-                'category',
-                'author',
-            ])
-            ->orderBy('title')
-            ->get(),
+            'courses' => Course::query()
+                ->with([
+                    'category',
+                    'author',
+                ])
+                ->latest()
+                ->get(),
         ])->layout('layouts.app');
     }
 }

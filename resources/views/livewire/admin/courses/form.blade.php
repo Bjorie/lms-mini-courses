@@ -204,7 +204,7 @@
         <div class="flex justify-end">
 
             <x-primary-button>
-                Создать курс
+                {{ $submitLabel }}
             </x-primary-button>
 
         </div>

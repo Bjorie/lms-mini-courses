@@ -6,10 +6,22 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
+use Database\Seeders\RoleSeeder;
+use Spatie\Permission\PermissionRegistrar;
 
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        app(PermissionRegistrar::class)
+            ->forgetCachedPermissions();
+
+        $this->seed(RoleSeeder::class);
+    }
 
     public function test_login_screen_can_be_rendered(): void
     {
@@ -57,10 +69,11 @@ class AuthenticationTest extends TestCase
     public function test_navigation_menu_can_be_rendered(): void
     {
         $user = User::factory()->create();
+        $user->assignRole('student');
 
-        $this->actingAs($user);
-
-        $response = $this->get('/dashboard');
+        $response = $this->actingAs($user)
+            ->followingRedirects()
+            ->get('/dashboard');
 
         $response
             ->assertOk()

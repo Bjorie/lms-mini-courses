@@ -1,0 +1,58 @@
+Структура папок
+Серийный номер тома: 2B97-FDC5
+C:.
+|   structure.txt
+|   
++---Actions
+|       Logout.php
+|       
++---Admin
+|   |   Dashboard.php
+|   |   
+|   +---Categories
+|   |       Create.php
+|   |       Edit.php
+|   |       Index.php
+|   |       
+|   +---Courses
+|   |       Builder.php
+|   |       Create.php
+|   |       Edit.php
+|   |       Index.php
+|   |       
+|   +---Lessons
+|   |       Create.php
+|   |       Edit.php
+|   |       Index.php
+|   |       
+|   +---Sections
+|   |       Create.php
+|   |       Edit.php
+|   |       Index.php
+|   |       
+|   \---Users
+|           Index.php
+|           
++---Author
+|   \---Courses
+|           Create.php
+|           Edit.php
+|           Index.php
+|           
++---Forms
+|       CourseForm.php
+|       LessonForm.php
+|       LoginForm.php
+|       SectionForm.php
+|       
+\---Student
+    |   Dashboard.php
+    |   
+    +---Courses
+    |       Index.php
+    |       MyCourses.php
+    |       Show.php
+    |       
+    \---Lessons
+            Show.php
+            

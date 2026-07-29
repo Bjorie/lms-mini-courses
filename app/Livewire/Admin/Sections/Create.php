@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Sections;
 
 use App\Models\Course;
 use App\Models\Section;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Create extends Component
@@ -28,9 +29,11 @@ class Create extends Component
 
             'title' => $this->title,
 
-            'position' => $this->course
-                ->sections()
-                ->count() + 1,
+            'position' => (
+                $this->course
+                    ->sections()
+                    ->max('position') ?? 0
+            ) + 1,
         ]);
 
         session()->flash(
@@ -44,7 +47,7 @@ class Create extends Component
         );
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.sections.create')
             ->layout('layouts.app');

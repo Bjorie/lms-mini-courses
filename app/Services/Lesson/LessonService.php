@@ -2,26 +2,22 @@
 
 namespace App\Services\Lesson;
 
-use App\DTO\Lesson\UpdateLessonData;
+use App\DTO\Lesson\LessonData;
 use App\Models\Lesson;
+use Illuminate\Support\Carbon;
 
 class LessonService
 {
-    public function create(UpdateLessonData $data): Lesson
-    {
-        return Lesson::create([
-            'section_id' => $data->sectionId,
-            'title' => $data->title,
-            'slug' => $data->slug,
-            'content' => $data->content,
-            'video_url' => $data->videoUrl,
-            'duration' => $data->duration,
-            'is_free' => $data->isFree,
-            'position' => (
-                Lesson::where('section_id', $data->sectionId)
-                    ->max('position') ?? 0
-            ) + 1,
-            'is_published' => $data->isPublished,
+    public function create(
+        LessonData $data
+    ): Lesson {
+        return Lesson::query()->create([
+            ...$this->attributes($data),
+
+            'position' => $this->nextPosition(
+                $data->sectionId
+            ),
+
             'published_at' => $data->isPublished
                 ? now()
                 : null,
@@ -30,11 +26,24 @@ class LessonService
 
     public function update(
         Lesson $lesson,
-        UpdateLessonData $data
+        LessonData $data
     ): Lesson {
-
         $lesson->update([
+            ...$this->attributes($data),
 
+            'published_at' => $this->publishedAt(
+                $lesson,
+                $data
+            ),
+        ]);
+
+        return $lesson->refresh();
+    }
+
+    private function attributes(
+        LessonData $data
+    ): array {
+        return [
             'section_id' => $data->sectionId,
             'title' => $data->title,
             'slug' => $data->slug,
@@ -42,18 +51,27 @@ class LessonService
             'video_url' => $data->videoUrl,
             'duration' => $data->duration,
             'is_free' => $data->isFree,
-            'is_published' => $data->isPublished,
-            'published_at' => $data->isPublished
-                ? ($lesson->published_at ?? now())
-                : null,
-
-        ]);
-
-        return $lesson;
+        ];
     }
 
-    public function delete(Lesson $lesson): void
-    {
-        $lesson->delete();
+    private function publishedAt(
+        Lesson $lesson,
+        LessonData $data,
+    ): ?Carbon {
+        if (! $data->isPublished) {
+            return null;
+        }
+
+        return $lesson->published_at ?? now();
+    }
+
+    private function nextPosition(
+        int $sectionId
+    ): int {
+        $lastPosition = Lesson::query()
+            ->where('section_id', $sectionId)
+            ->max('position');
+
+        return ($lastPosition ?? 0) + 1;
     }
 }

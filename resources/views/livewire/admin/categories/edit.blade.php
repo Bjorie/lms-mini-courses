@@ -1,38 +1,17 @@
-<div class="max-w-xl mx-auto p-6">
+<div class="py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">
+                Редактирование категории
+            </h1>
 
-    <h1 class="text-2xl font-bold mb-6">
-        Редактирование категории
-    </h1>
-
-    <form wire:submit="save">
-
-        <div class="mb-4">
-
-            <label class="block mb-2">
-                Название
-            </label>
-
-            <input
-                type="text"
-                wire:model="name"
-                class="w-full border rounded px-3 py-2"
-            >
-
-            @error('name')
-                <p class="text-red-600 text-sm">
-                    {{ $message }}
-                </p>
-            @enderror
-
+            <p class="mt-1 text-sm text-gray-600">
+                Измените название выбранной категории.
+            </p>
         </div>
 
-        <button
-            type="submit"
-            class="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-            Сохранить
-        </button>
-
-    </form>
-
+        @include('livewire.admin.categories.form', [
+            'submitLabel' => 'Сохранить изменения',
+        ])
+    </div>
 </div>

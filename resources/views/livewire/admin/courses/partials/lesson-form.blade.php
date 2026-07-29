@@ -1,148 +1,214 @@
-                    <div class="mt-6 rounded-lg border bg-gray-50 p-4">
+{{-- resources/views/livewire/admin/courses/partials/lesson-form.blade.php --}}
 
-                        <div class="space-y-5">
+<form
+    wire:submit.prevent="{{ $editingLesson ? 'updateLesson' : 'saveLesson' }}"
+    class="space-y-6"
+>
+    <div class="border-b border-gray-200 pb-4">
+        <h3 class="text-lg font-semibold text-gray-900">
+            {{ $editingLesson ? 'Редактирование урока' : 'Новый урок' }}
+        </h3>
 
-                            {{-- Название --}}
-                            <div>
+        <p class="mt-1 text-sm text-gray-500">
+            Заполните информацию об уроке.
+        </p>
+    </div>
 
-                                <x-input-label
-                                    for="lesson-title"
-                                    value="Название урока"
-                                />
+    <div class="grid gap-6 md:grid-cols-2">
 
-                                <x-text-input
-                                    id="lesson-title"
-                                    wire:model="lessonForm.title"
-                                    class="mt-1 block w-full"
-                                />
+        {{-- Название --}}
+        <div class="md:col-span-2">
+            <x-input-label
+                for="lesson-title"
+                value="Название урока"
+            />
 
-                                <x-input-error
-                                    :messages="$errors->get('lessonForm.title')"
-                                    class="mt-2"
-                                />
+            <x-text-input
+                id="lesson-title"
+                class="mt-1 block w-full"
+                wire:model.blur="lessonForm.title"
+            />
 
-                            </div>
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.title')"
+            />
+        </div>
 
-                            {{-- Slug --}}
-                            <div>
+        {{-- Slug --}}
+        <div class="md:col-span-2">
+            <x-input-label
+                for="lesson-slug"
+                value="Slug"
+            />
 
-                                <x-input-label
-                                    for="lesson-slug"
-                                    value="Slug"
-                                />
+            <x-text-input
+                id="lesson-slug"
+                class="mt-1 block w-full"
+                wire:model.blur="lessonForm.slug"
+            />
 
-                                <x-text-input
-                                    id="lesson-slug"
-                                    wire:model="lessonForm.slug"
-                                    class="mt-1 block w-full"
-                                />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.slug')"
+            />
+        </div>
 
-                                <x-input-error
-                                    :messages="$errors->get('lessonForm.slug')"
-                                    class="mt-2"
-                                />
+        {{-- Тип урока --}}
+        <div>
+            <x-input-label
+                for="lesson-type"
+                value="Тип урока"
+            />
 
-                            </div>
+            <select
+                id="lesson-type"
+                wire:model.blur="lessonForm.type"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                <option value="video">Видео</option>
+                <option value="text">Текст</option>
+                <option value="quiz">Тест</option>
+                <option value="file">Файл</option>
+            </select>
 
-                            {{-- Видео --}}
-                            <div>
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.type')"
+            />
+        </div>
 
-                                <x-input-label
-                                    for="video-url"
-                                    value="Ссылка на видео"
-                                />
+        {{-- Продолжительность --}}
+        <div>
+            <x-input-label
+                for="lesson-duration"
+                value="Продолжительность (мин.)"
+            />
 
-                                <x-text-input
-                                    id="video-url"
-                                    wire:model="lessonForm.video_url"
-                                    class="mt-1 block w-full"
-                                />
+            <x-text-input
+                id="lesson-duration"
+                type="number"
+                min="1"
+                class="mt-1 block w-full"
+                wire:model.blur="lessonForm.duration"
+            />
 
-                            </div>
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.duration')"
+            />
+        </div>
 
-                            {{-- Продолжительность --}}
-                            <div>
+        {{-- Порядок --}}
+        <div>
+            <x-input-label
+                for="lesson-position"
+                value="Порядок"
+            />
 
-                                <x-input-label
-                                    for="lesson-duration"
-                                    value="Продолжительность (сек.)"
-                                />
+            <x-text-input
+                id="lesson-position"
+                type="number"
+                min="1"
+                class="mt-1 block w-full"
+                wire:model.blur="lessonForm.position"
+            />
 
-                                <x-text-input
-                                    id="lesson-duration"
-                                    type="number"
-                                    min="0"
-                                    wire:model="lessonForm.duration"
-                                    class="mt-1 block w-full"
-                                />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.position')"
+            />
+        </div>
 
-                            </div>
+        {{-- Видео --}}
+        <div>
+            <x-input-label
+                for="lesson-video"
+                value="Ссылка на видео"
+            />
 
-                            {{-- Контент --}}
-                            <div>
+            <x-text-input
+                id="lesson-video"
+                type="url"
+                class="mt-1 block w-full"
+                wire:model.blur="lessonForm.video_url"
+                placeholder="https://..."
+            />
 
-                                <x-input-label
-                                    for="lesson-content"
-                                    value="Содержимое урока"
-                                />
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.video_url')"
+            />
+        </div>
 
-                                <textarea
-                                    id="lesson-content"
-                                    rows="10"
-                                    wire:model="lessonForm.content"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                ></textarea>
+        {{-- Контент --}}
+        <div class="md:col-span-2">
+            <x-input-label
+                for="lesson-content"
+                value="Текст урока"
+            />
 
-                            </div>
+            <textarea
+                id="lesson-content"
+                rows="8"
+                wire:model.blur="lessonForm.content"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            ></textarea>
 
-                            {{-- Бесплатный --}}
-                            <label class="flex items-center gap-2">
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('lessonForm.content')"
+            />
+        </div>
 
-                                <input
-                                    type="checkbox"
-                                    wire:model="lessonForm.is_free"
-                                    class="rounded border-gray-300"
-                                >
+    </div>
 
-                                <span>Бесплатный урок</span>
+    <div class="grid gap-4 md:grid-cols-2">
 
-                            </label>
+        <label class="flex items-center gap-3">
+            <input
+                type="checkbox"
+                wire:model="lessonForm.is_free"
+                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+            >
 
-                            {{-- Опубликован --}}
-                            <label class="flex items-center gap-2">
+            <span class="text-sm text-gray-700">
+                Бесплатный урок
+            </span>
+        </label>
 
-                                <input
-                                    type="checkbox"
-                                    wire:model="lessonForm.is_published"
-                                    class="rounded border-gray-300"
-                                >
+        <label class="flex items-center gap-3">
+            <input
+                type="checkbox"
+                wire:model="lessonForm.isPublished"
+                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+            >
 
-                                <span>Опубликован</span>
+            <span class="text-sm text-gray-700">
+                Опубликовать урок
+            </span>
+        </label>
 
-                            </label>
+    </div>
 
-                            <div class="flex gap-3">
+    <div class="flex items-center justify-end gap-3 border-t border-gray-200 pt-5">
 
-                                @if($editingLesson)
+        <x-secondary-button
+            type="button"
+            wire:click="cancelLesson"
+        >
+            Отмена
+        </x-secondary-button>
 
-                                    <x-primary-button wire:click="updateLesson">
-                                        Обновить
-                                    </x-primary-button>
+        <x-primary-button type="submit">
 
-                                @else
+            @if ($editingLesson)
+                Сохранить изменения
+            @else
+                Создать урок
+            @endif
 
-                                    <x-primary-button wire:click="saveLesson">
-                                        Сохранить
-                                    </x-primary-button>
+        </x-primary-button>
 
-                                @endif
-
-                                <x-secondary-button wire:click="cancelLesson">
-                                    Отмена
-                                </x-secondary-button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+    </div>
+</form>

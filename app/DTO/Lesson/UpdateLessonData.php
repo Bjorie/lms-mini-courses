@@ -27,7 +27,6 @@ final readonly class UpdateLessonData
             videoUrl: $form->video_url,
             duration: $form->duration,
             isFree: $form->is_free,
-            isPublished: $form->is_published,
         );
     }
 }

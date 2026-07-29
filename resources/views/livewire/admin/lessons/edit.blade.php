@@ -1,6 +1,6 @@
 <div class="max-w-5xl mx-auto py-6">
 
-    @if(session()->has('success'))
+    @if (session()->has('success'))
         <div class="mb-4 rounded-lg border border-green-300 bg-green-100 px-4 py-3 text-green-800">
             {{ session('success') }}
         </div>
@@ -13,7 +13,6 @@
     </x-admin.back-link>
 
     <div class="mt-6">
-
         <h1 class="text-3xl font-bold">
             {{ $form->title }}
         </h1>
@@ -21,30 +20,23 @@
         <p class="mt-2 text-gray-500">
             Редактирование урока
         </p>
-
     </div>
 
     <form
         wire:submit="save"
         class="mt-8 space-y-8"
     >
-
         {{-- Основная информация --}}
 
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-
             <div class="border-b px-6 py-4">
-
                 <h2 class="text-lg font-semibold">
                     Основная информация
                 </h2>
-
             </div>
 
             <div class="space-y-6 p-6">
-
                 <div>
-
                     <x-input-label
                         for="title"
                         value="Название урока"
@@ -52,7 +44,7 @@
 
                     <x-text-input
                         id="title"
-                        wire:model.live="form.title"
+                        wire:model.blur="form.title"
                         class="mt-1 block w-full"
                     />
 
@@ -60,11 +52,9 @@
                         :messages="$errors->get('form.title')"
                         class="mt-2"
                     />
-
                 </div>
 
                 <div>
-
                     <x-input-label
                         for="slug"
                         value="Slug"
@@ -72,7 +62,7 @@
 
                     <x-text-input
                         id="slug"
-                        wire:model.live="form.slug"
+                        wire:model.blur="form.slug"
                         class="mt-1 block w-full"
                     />
 
@@ -80,13 +70,10 @@
                         :messages="$errors->get('form.slug')"
                         class="mt-2"
                     />
-
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
-
                         <x-input-label
                             for="video_url"
                             value="Ссылка на видео"
@@ -94,7 +81,7 @@
 
                         <x-text-input
                             id="video_url"
-                            wire:model.live="form.video_url"
+                            wire:model.blur="form.video_url"
                             class="mt-1 block w-full"
                         />
 
@@ -102,11 +89,9 @@
                             :messages="$errors->get('form.video_url')"
                             class="mt-2"
                         />
-
                     </div>
 
                     <div>
-
                         <x-input-label
                             for="duration"
                             value="Продолжительность (сек.)"
@@ -116,7 +101,7 @@
                             id="duration"
                             type="number"
                             min="0"
-                            wire:model.live="form.duration"
+                            wire:model.blur="form.duration"
                             class="mt-1 block w-full"
                         />
 
@@ -124,103 +109,82 @@
                             :messages="$errors->get('form.duration')"
                             class="mt-2"
                         />
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         {{-- Настройки --}}
 
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-
             <div class="border-b px-6 py-4">
-
                 <h2 class="text-lg font-semibold">
                     Настройки
                 </h2>
-
             </div>
 
             <div class="space-y-5 p-6">
-
                 <label class="flex items-center gap-3">
-
                     <input
                         type="checkbox"
-                        wire:model.live="form.is_free"
+                        wire:model="form.is_free"
                         class="rounded border-gray-300"
                     >
 
                     <span>
                         Бесплатный урок
                     </span>
-
                 </label>
 
                 <label class="flex items-center gap-3">
-
                     <input
                         type="checkbox"
-                        wire:model.live="form.is_published"
+                        wire:model="form.isPublished"
                         class="rounded border-gray-300"
                     >
 
                     <span>
                         Опубликован
                     </span>
-
                 </label>
-
             </div>
-
         </div>
 
         {{-- Контент --}}
 
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-
             <div class="border-b px-6 py-4">
-
                 <h2 class="text-lg font-semibold">
                     Контент урока
                 </h2>
-
             </div>
 
             <div class="p-6">
-
                 <x-input-label
-                    for="content"
+                    for="lesson-editor"
                     value="Содержимое урока"
                 />
 
-                <textarea
-                    id="content"
-                    rows="16"
-                    wire:model.live="form.content"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                ></textarea>
+                <div
+                    id="lesson-editor"
+                    class="mt-2 min-h-[350px] rounded-lg border border-gray-300 bg-white"
+                    wire:ignore
+                ></div>
 
                 <x-input-error
                     :messages="$errors->get('form.content')"
                     class="mt-2"
                 />
-
             </div>
-
         </div>
 
         {{-- Кнопки --}}
 
         <div class="flex items-center gap-4">
-
             <x-primary-button
                 type="submit"
                 wire:loading.attr="disabled"
+                wire:target="save"
             >
                 Сохранить урок
             </x-primary-button>
@@ -231,7 +195,6 @@
             >
                 Отмена
             </a>
-
         </div>
 
         <div
@@ -241,7 +204,26 @@
         >
             Сохранение...
         </div>
-
     </form>
 
 </div>
+
+@script
+<script>
+    document.addEventListener('livewire:navigated', () => {
+        const editorElement = document.getElementById('lesson-editor');
+
+        if (!editorElement || editorElement.editor) {
+            return;
+        }
+
+        editorElement.editor = window.initTiptap(
+            editorElement,
+            @js($form->content ?? ''),
+            (html) => {
+                $wire.set('form.content', html);
+            },
+        );
+    });
+</script>
+@endscript

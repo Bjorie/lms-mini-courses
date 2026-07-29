@@ -3,120 +3,192 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Lesson;
-use App\Models\Section;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
-use Livewire\Form;
 use Illuminate\Validation\Rule;
+use Livewire\Form;
+
 class LessonForm extends Form
 {
     public ?Lesson $lesson = null;
-    public ?int $section_id = null;
-    public string $title = '';
-    public string $slug = '';
-    public ?string $content = null;
-    public ?string $video_url = null;
-    public int $duration = 0;
-    public bool $is_free = false;
-    public bool $is_published = false;
 
-    protected function data(): array
+    public ?int $section_id = null;
+
+    public string $title = '';
+
+    public string $slug = '';
+
+    public string $content = '';
+
+    public ?string $video_url = null;
+
+    public int $duration = 5;
+
+    public int $position = 1;
+
+    public string $type = 'video';
+
+    public bool $is_free = false;
+
+    public bool $isPublished = false;
+
+    protected function rules(): array
     {
+        $slugRule = Rule::unique('lessons', 'slug')
+            ->where(
+                fn (Builder $query): Builder => $query->where(
+                    'section_id',
+                    $this->section_id
+                )
+            );
+
+        if ($this->lesson !== null) {
+            $slugRule->ignore($this->lesson->id);
+        }
+
         return [
-            'section_id' => $this->section_id,
-            'title' => $this->title,
-            'slug' => blank($this->slug)
-                ? Str::slug($this->title)
-                : $this->slug,
-            'content' => $this->content,
-            'video_url' => $this->video_url,
-            'duration' => $this->duration,
-            'is_free' => $this->is_free,
-            'position' => $this->lesson
-                ? $this->lesson->position
-                : $this->nextPosition(),
-            'is_published' => $this->is_published,
-            'published_at' => $this->is_published
-                ? ($this->lesson?->published_at ?? now())
-                : null
+            'section_id' => [
+                'required',
+                'integer',
+                'exists:sections,id',
+            ],
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                $slugRule,
+            ],
+            'content' => [
+                'nullable',
+                'string',
+            ],
+            'video_url' => [
+                'nullable',
+                'url',
+            ],
+            'duration' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+            'position' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+            'type' => [
+                'required',
+                Rule::in([
+                    'video',
+                    'text',
+                    'quiz',
+                    'file',
+                ]),
+            ],
+            'is_free' => [
+                'boolean',
+            ],
+            'isPublished' => [
+                'boolean',
+            ],
         ];
     }
 
-    public function resetForm(): void
+    public function updatedTitle(): void
     {
-        $this->reset();
-        $this->lesson = null;
-        $this->section_id = null;
+        if ($this->lesson === null || blank($this->slug)) {
+            $this->generateSlug();
+        }
     }
+
     public function generateSlug(): void
     {
         if (blank($this->slug)) {
             $this->slug = Str::slug($this->title);
         }
-    }    
+    }
 
     public function setLesson(Lesson $lesson): void
     {
         $this->lesson = $lesson;
+
         $this->section_id = $lesson->section_id;
         $this->title = $lesson->title;
         $this->slug = $lesson->slug;
-        $this->content = $lesson->content;
+        $this->content = $lesson->content ?? '';
         $this->video_url = $lesson->video_url;
         $this->duration = $lesson->duration;
+        $this->position = $lesson->position;
+        $this->type = $lesson->type;
         $this->is_free = $lesson->is_free;
-        $this->is_published = $lesson->is_published;
+        $this->isPublished = $lesson->published_at !== null;
     }
+
     public function store(): Lesson
     {
-
-        $this->generateSlug();
         $this->validate();
 
-        return Lesson::create($this->data());
+        $lesson = Lesson::create([
+            'section_id' => $this->section_id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'content' => $this->content,
+            'video_url' => $this->video_url,
+            'duration' => $this->duration,
+            'position' => $this->position,
+            'type' => $this->type,
+            'is_free' => $this->is_free,
+            'published_at' => $this->isPublished ? now() : null,
+        ]);
+
+        $this->lesson = $lesson;
+
+        return $lesson;
     }
+
     public function update(): void
     {
-        $this->generateSlug();
+        if ($this->lesson === null) {
+            return;
+        }
+
         $this->validate();
 
-        $this->lesson->update(
-            $this->data()
-        );
-    }    
-    protected function nextPosition(): int
-    {
-        return (Lesson::where(
-            'section_id',
-            $this->section_id
-        )->max('position') ?? 0) + 1;
-    }    
-    protected function rules(): array
-    {
-        return [
-            'section_id' => ['required', 'exists:sections,id'],
-
-            'title' => ['required', 'min:3', 'max:255'],
-
-            'slug' => [
-                        'required',
-                        'string',
-                        'max:255',
-
-                        Rule::unique('lessons')
-                            ->where(fn ($query) => $query->where(
-                                'section_id',
-                                $this->section_id
-                            ))
-                            ->ignore($this->lesson),
-            ],
-
-            'content' => ['nullable'],
-
-            'video_url' => ['nullable', 'url'],
-
-            'duration' => ['required', 'integer', 'min:0'],
-        ];
+        $this->lesson->update([
+            'section_id' => $this->section_id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'content' => $this->content,
+            'video_url' => $this->video_url,
+            'duration' => $this->duration,
+            'position' => $this->position,
+            'type' => $this->type,
+            'is_free' => $this->is_free,
+            'published_at' => $this->isPublished
+                ? ($this->lesson->published_at ?? now())
+                : null,
+        ]);
     }
 
+    public function resetForm(): void
+    {
+        $this->reset();
 
+        $this->lesson = null;
+        $this->section_id = null;
+        $this->title = '';
+        $this->slug = '';
+        $this->content = '';
+        $this->video_url = null;
+        $this->duration = 5;
+        $this->position = 1;
+        $this->type = 'video';
+        $this->is_free = false;
+        $this->isPublished = false;
+    }
 }

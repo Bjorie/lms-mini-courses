@@ -2,23 +2,34 @@
 
 namespace App\Livewire\Forms;
 
+use App\Enums\CourseLevel;
+use App\Enums\CourseStatus;
 use App\Models\Course;
 use Illuminate\Support\Str;
-use Livewire\Form;
 use Illuminate\Validation\Rule;
+use Livewire\Form;
+
 
 class CourseForm extends Form
 {
     public ?Course $course = null;
 
     public string $title = '';
+
     public string $slug = '';
+
     public ?int $category_id = null;
-    public ?string $short_description = '';
-    public ?string $description = '';
+
+    public ?string $short_description = null;
+
+    public ?string $description = null;
+
     public float $price = 0;
+
     public string $level = 'beginner';
+
     public string $status = 'draft';
+
     public ?string $thumbnail = null;
 
     public function setCourse(Course $course): void
@@ -39,9 +50,9 @@ class CourseForm extends Form
     protected function rules(): array
     {
         return [
-
             'title' => [
                 'required',
+                'string',
                 'min:5',
                 'max:255',
             ],
@@ -56,16 +67,25 @@ class CourseForm extends Form
 
             'category_id' => [
                 'required',
+                'integer',
                 'exists:categories,id',
             ],
 
             'short_description' => [
                 'nullable',
+                'string',
                 'max:500',
             ],
 
             'description' => [
                 'nullable',
+                'string',
+            ],
+
+            'thumbnail' => [
+                'nullable',
+                'string',
+                'max:255',
             ],
 
             'price' => [
@@ -76,56 +96,20 @@ class CourseForm extends Form
 
             'level' => [
                 'required',
+                Rule::enum(CourseLevel::class),
             ],
 
             'status' => [
                 'required',
-            ],
+                Rule::enum(CourseStatus::class),
+            ]
         ];
     }
 
-public function store(): Course
-{
-    $this->validate();
-
-    return Course::create([
-        ...$this->data(),
-        'author_id' => auth()->id(),
-    ]);
-}
-
-    public function update(): void
+    public function generateSlug(): void
     {
-        $this->validate();
-
-        $this->course->update($this->data());
+        if ($this->slug === '') {
+            $this->slug = Str::slug($this->title);
+        }
     }
-
-    protected function data(): array
-    {
-        return [
-
-            'category_id' => $this->category_id,
-
-            'title' => $this->title,
-
-            'slug' => $this->slug ?: Str::slug($this->title),
-
-            'short_description' => $this->short_description,
-
-            'description' => $this->description,
-
-            'thumbnail' => $this->thumbnail,
-
-            'price' => $this->price,
-
-            'level' => $this->level,
-
-            'status' => $this->status,
-
-        ];
-    }
-
-
-    
 }

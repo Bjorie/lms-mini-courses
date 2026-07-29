@@ -2,35 +2,40 @@
 
 namespace App\Livewire\Admin\Lessons;
 
+use App\DTO\Lesson\LessonData;
 use App\Livewire\Forms\LessonForm;
 use App\Models\Lesson;
-use Livewire\Component;
 use App\Services\Lesson\LessonService;
-use App\DTO\Lesson\UpdateLessonData;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Livewire\Component;
 
 class Edit extends Component
 {
     public LessonForm $form;
+
     protected LessonService $lessonService;
 
     public function boot(LessonService $lessonService): void
     {
         $this->lessonService = $lessonService;
     }
+
     public function mount(Lesson $lesson): void
     {
         $this->form->setLesson($lesson);
     }
 
-    public function save()
+    public function save(): RedirectResponse
     {
+        $this->form->generateSlug();
         $this->form->validate();
 
-        $dto = UpdateLessonData::fromForm($this->form);
+        $data = LessonData::fromForm($this->form);
 
         $this->lessonService->update(
             $this->form->lesson,
-            $dto
+            $data
         );
 
         session()->flash(
@@ -44,7 +49,7 @@ class Edit extends Component
         );
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.lessons.edit')
             ->layout('layouts.app');

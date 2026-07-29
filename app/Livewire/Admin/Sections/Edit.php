@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Sections;
 
 use App\Models\Section;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Edit extends Component
@@ -38,7 +39,7 @@ class Edit extends Component
         );
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.sections.edit')
             ->layout('layouts.app');

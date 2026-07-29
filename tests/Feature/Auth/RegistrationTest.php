@@ -5,10 +5,22 @@ namespace Tests\Feature\Auth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
+use Database\Seeders\RoleSeeder;
+use Spatie\Permission\PermissionRegistrar;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        app(PermissionRegistrar::class)
+            ->forgetCachedPermissions();
+
+        $this->seed(RoleSeeder::class);
+    }
 
     public function test_registration_screen_can_be_rendered(): void
     {
