@@ -12,6 +12,10 @@ use Tests\TestCase;
 use Spatie\Permission\Models\Role;
 use Database\Seeders\RoleSeeder;
 use Spatie\Permission\PermissionRegistrar;
+use App\Jobs\SendEnrollmentEmailJob;
+use Illuminate\Support\Facades\Queue;
+use App\Mail\EnrollmentMail;
+use Illuminate\Support\Facades\Mail;
 
 class EnrollmentServiceTest extends TestCase
 {
@@ -132,4 +136,40 @@ class EnrollmentServiceTest extends TestCase
             $enrollment->paid_amount
         );
     }
+
+    public function test_enrollment_dispatches_email_job(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $this->service->enroll($user, $course);
+
+        Queue::assertPushed(
+            SendEnrollmentEmailJob::class,
+            function (SendEnrollmentEmailJob $job) use ($user, $course) {
+                return $job->user->is($user)
+                    && $job->course->is($course);
+            }
+        );
+    }
+
+    public function test_job_sends_enrollment_email(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $job = new SendEnrollmentEmailJob($user, $course);
+
+        $job->handle();
+
+        Mail::assertSent(EnrollmentMail::class, function (EnrollmentMail $mail) use ($course) {
+            return $mail->course->is($course);
+        });
+    }    
+
+
 }

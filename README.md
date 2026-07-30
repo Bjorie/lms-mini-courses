@@ -44,3 +44,17 @@ http://localhost
 ```bash
 ./vendor/bin/sail artisan test
 ```
+
+## Queue
+
+В проекте используются очереди Laravel с Redis..
+
+Чтобы запустить обработчик очереди:
+
+```bash
+./vendor/bin/sail artisan queue:work
+```
+
+Для локального тестирования электронной почты используется Mailpit:
+
+http://localhost:8025

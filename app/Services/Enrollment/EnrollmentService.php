@@ -3,10 +3,12 @@
 namespace App\Services\Enrollment;
 
 use App\Exceptions\AlreadyEnrolledException;
+use App\Jobs\SendEnrollmentEmailJob;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class EnrollmentService
 {
@@ -15,24 +17,37 @@ class EnrollmentService
         Course $course,
         float $paidAmount = 0,
     ): Enrollment {
-        return DB::transaction(function () use (
-            $user,
-            $course,
-            $paidAmount,
-        ): Enrollment {
-            if ($this->isEnrolled($user, $course)) {
-                throw new AlreadyEnrolledException(
-                    'Вы уже записаны на курс.'
-                );
-            }
 
-            return Enrollment::query()->create([
-                'user_id' => $user->id,
-                'course_id' => $course->id,
-                'paid_amount' => $paidAmount,
-                'enrolled_at' => now(),
-            ]);
-        });
+        if ($paidAmount < 0) {
+            throw new InvalidArgumentException(
+                'Сумма оплаты не может быть отрицательной.'
+            );
+        }
+
+    $enrollment = DB::transaction(function () use (
+        $user,
+        $course,
+        $paidAmount,
+    ): Enrollment {
+        if ($this->isEnrolled($user, $course)) {
+            throw new AlreadyEnrolledException(
+                'Вы уже записаны на курс.'
+            );
+        }
+
+        return Enrollment::query()->create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'paid_amount' => $paidAmount,
+            'enrolled_at' => now(),
+        ]);
+    });
+
+    SendEnrollmentEmailJob::dispatch($user, $course)
+        ->afterCommit();
+
+    return $enrollment;
+    
     }
 
     public function unenroll(
