@@ -18,6 +18,8 @@
 - Spatie Laravel Permission
 - Vite
 - PHPUnit
+- Redis queues
+- Asynchronous email notifications
 
 Для реализации ролей и прав доступа используется пакет **Spatie Laravel Permission**.
 
@@ -45,9 +47,9 @@ http://localhost
 ./vendor/bin/sail artisan test
 ```
 
-## Queue
+## Очереди
 
-В проекте используются очереди Laravel с Redis..
+В проекте используются очереди Laravel с Redis.
 
 Чтобы запустить обработчик очереди:
 
