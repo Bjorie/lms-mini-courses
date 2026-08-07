@@ -6,10 +6,10 @@ use App\DTO\Course\CourseData;
 use App\Enums\CourseLevel;
 use App\Enums\CourseStatus;
 use App\Livewire\Forms\CourseForm;
-use App\Models\Category;
 use App\Models\Course;
 use App\Services\Course\CourseService;
 use Livewire\Component;
+use App\Services\Category\CategoryCacheService;
 
 class Edit extends Component
 {
@@ -45,19 +45,15 @@ class Edit extends Component
         );
     }
 
-    public function render()
+    public function render(CategoryCacheService $categoryCache)
     {
-        return view(
-            'livewire.admin.courses.edit',
-            [
-                'categories' => Category::query()
-                    ->orderBy('name')
-                    ->get(),
-
-                'levels' => CourseLevel::cases(),
-
-                'statuses' => CourseStatus::cases(),
-            ],
-        )->layout('layouts.app');
+        return view('livewire.admin.courses.edit', [
+            'categories' => $categoryCache->all(),
+            'levels' => CourseLevel::cases(),
+            'statuses' => CourseStatus::cases(),
+        ])
+            ->layout('layouts.app')
+            ->title('Редактировать курс');
     }
+    
 }

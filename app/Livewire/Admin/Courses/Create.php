@@ -6,10 +6,10 @@ use App\DTO\Course\CourseData;
 use App\Enums\CourseLevel;
 use App\Enums\CourseStatus;
 use App\Livewire\Forms\CourseForm;
-use App\Models\Category;
 use App\Services\Course\CourseService;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use App\Services\Category\CategoryCacheService;
 
 class Create extends Component
 {
@@ -56,14 +56,12 @@ class Create extends Component
         }
     }
 
-    public function render()
+    public function render(CategoryCacheService $categoryCache)
     {
         return view(
             'livewire.admin.courses.create',
             [
-                'categories' => Category::query()
-                    ->orderBy('name')
-                    ->get(),
+                'categories' => $categoryCache->all(),
 
                 'levels' => CourseLevel::cases(),
 

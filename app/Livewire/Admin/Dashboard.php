@@ -6,7 +6,9 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use App\Services\Dashboard\DashboardCacheService;
 
 class Dashboard extends Component
 {
@@ -18,18 +20,28 @@ class Dashboard extends Component
 
     public int $enrollmentsCount = 0;
 
-    /** @var Collection<int, \App\Models\Course> */
+    /** @var Collection<int, Course> */
     public Collection $latestCourses;
 
     public function mount(): void
     {
-        $this->coursesCount = Course::count();
+        $stats = Cache::remember(
+            DashboardCacheService::STATS_KEY,
+            now()->addMinutes(5),
+            function (): array {
+                return [
+                    'courses_count' => Course::count(),
+                    'published_courses_count' => Course::published()->count(),
+                    'students_count' => User::role('student')->count(),
+                    'enrollments_count' => Enrollment::count(),
+                ];
+            }
+        );
 
-        $this->publishedCoursesCount = Course::published()->count();
-
-        $this->studentsCount = User::role('student')->count();
-
-        $this->enrollmentsCount = Enrollment::count();
+        $this->coursesCount = $stats['courses_count'];
+        $this->publishedCoursesCount = $stats['published_courses_count'];
+        $this->studentsCount = $stats['students_count'];
+        $this->enrollmentsCount = $stats['enrollments_count'];
 
         $this->latestCourses = Course::query()
             ->with('author')

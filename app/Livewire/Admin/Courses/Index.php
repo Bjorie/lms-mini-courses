@@ -3,31 +3,26 @@
 namespace App\Livewire\Admin\Courses;
 
 use App\Models\Course;
-use Illuminate\Contracts\View\View;
 use Livewire\Component;
+use App\Services\Course\CourseCacheService;
+use App\Services\Course\CourseService;
 
 class Index extends Component
 {
-    public function delete(Course $course): void
+    public function delete(Course $course,CourseService $courseService,): void 
     {
-        $course->delete();
-
-        session()->flash(
-            'success',
-            'Курс успешно удалён.'
-        );
+        $courseService->delete($course);
     }
 
-    public function render(): View
+    public function render(CourseCacheService $courseCache)
     {
         return view('livewire.admin.courses.index', [
-            'courses' => Course::query()
-                ->with([
-                    'category',
-                    'author',
-                ])
-                ->latest()
-                ->get(),
-        ])->layout('layouts.app');
+            'courses' => $courseCache->adminList(),
+        ])
+            ->layout('layouts.app')
+            ->title('Управление курсами');
     }
+
+
+
 }

@@ -7,14 +7,15 @@ use App\Enums\CourseStatus;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use App\Events\CourseChanged;
 
 class CourseService
 {
     public function create(
         CourseData $data,
         User $author,
-    ): Course {
-        return Course::query()->create([
+    ): Course {        
+        $course = Course::query()->create([
             ...$this->attributes($data),
             'author_id' => $author->id,
             'published_at' => $this->publishedAt(
@@ -22,6 +23,11 @@ class CourseService
                 $data,
             ),
         ]);
+        
+        CourseChanged::dispatch($course);
+
+        return $course;
+        
     }
 
     public function update(
@@ -37,6 +43,13 @@ class CourseService
         ]);
 
         return $course->refresh();
+    }
+
+    public function delete(Course $course): void
+    {
+        $course->delete();
+
+        CourseChanged::dispatch($course);
     }
 
     private function attributes(
