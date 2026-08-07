@@ -2,13 +2,14 @@
 
 namespace App\Services\Enrollment;
 
+use App\Events\EnrollmentCreated;
 use App\Exceptions\AlreadyEnrolledException;
-use App\Jobs\SendEnrollmentEmailJob;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+
 
 class EnrollmentService
 {
@@ -43,8 +44,7 @@ class EnrollmentService
         ]);
     });
 
-    SendEnrollmentEmailJob::dispatch($user, $course)
-        ->afterCommit();
+    EnrollmentCreated::dispatch($user, $course);
 
     return $enrollment;
     
